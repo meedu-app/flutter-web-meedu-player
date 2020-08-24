@@ -22,7 +22,6 @@ class MeeduPlayer extends StatelessWidget {
       builder: (_) => AspectRatio(
         aspectRatio: 16 / 9,
         child: Container(
-          key: Key('video-container'),
           color: Colors.black,
           child: !_.loading
               ? Stack(

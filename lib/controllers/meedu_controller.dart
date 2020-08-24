@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:html';
+import 'package:universal_html/html.dart' as html;
 import 'package:get/state_manager.dart';
 import 'package:get/utils.dart';
 import 'package:video_player/video_player.dart';
@@ -93,9 +93,9 @@ class MeeduController extends GetxController {
   Future<void> onFullscreen() async {
     if (GetPlatform.isWeb) {
       if (!fullscreen) {
-        document.documentElement.requestFullscreen();
+        html.document.documentElement.requestFullscreen();
       } else {
-        document.exitFullscreen();
+        html.document.exitFullscreen();
       }
     } else {
       if (!fullscreen) {
@@ -110,7 +110,7 @@ class MeeduController extends GetxController {
   @override
   void onReady() {
     if (GetPlatform.isWeb) {
-      document.onFullscreenChange.listen((event) {
+      html.document.onFullscreenChange.listen((event) {
         _fullscreen.value = !_fullscreen.value;
         print("fullscreen $fullscreen");
       });

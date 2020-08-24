@@ -1,4 +1,7 @@
+import 'dart:async';
+import 'dart:html';
 import 'package:get/state_manager.dart';
+import 'package:get/utils.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter/services.dart';
 
@@ -16,6 +19,7 @@ class MeeduController extends GetxController {
   RxBool _mute = false.obs;
   RxBool _fullscreen = false.obs;
   RxDouble _volume = 0.0.obs;
+  StreamSubscription _fullscreenSubs;
   bool get mute => _mute.value;
   bool get fullscreen => _fullscreen.value;
   double get volume => _volume.value;
@@ -87,18 +91,35 @@ class MeeduController extends GetxController {
   }
 
   Future<void> onFullscreen() async {
-    _fullscreen.value = !_fullscreen.value;
+    if (GetPlatform.isWeb) {
+      if (!fullscreen) {
+        document.documentElement.requestFullscreen();
+      } else {
+        document.exitFullscreen();
+      }
+    } else {
+      if (!fullscreen) {
+        await SystemChrome.setEnabledSystemUIOverlays([]);
+      } else {
+        await SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+      }
+      _fullscreen.value = !_fullscreen.value;
+    }
+  }
 
-    // if (fullscreen) {
-    //   SystemChrome.setEnabledSystemUIOverlays([]);
-    // } else {
-    //   SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
-    // }
-    // await _videoPlayerController.setVolume(mute ? 0 : volume);
+  @override
+  void onReady() {
+    if (GetPlatform.isWeb) {
+      document.onFullscreenChange.listen((event) {
+        _fullscreen.value = !_fullscreen.value;
+        print("fullscreen $fullscreen");
+      });
+    }
   }
 
   @override
   void onClose() {
+    _fullscreenSubs?.cancel();
     this.dispose();
   }
 }
